@@ -2,17 +2,20 @@
 
 namespace App\Http\Requests;
 
+use App\Models\Task;
+use Illuminate\Auth\Access\Response;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Facades\Gate;
 
 class StoreTaskRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
      */
-    public function authorize(): bool
+    public function authorize(): Response
     {
-        return true;
+        return Gate::inspect('create', Task::class);
     }
 
     /**

@@ -8,6 +8,7 @@ use App\Models\Task;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Gate;
 
 class TaskController extends Controller
 {
@@ -16,6 +17,8 @@ class TaskController extends Controller
      */
     public function index(Request $request): View
     {
+        Gate::authorize('viewAny', Task::class);
+
         return view('tasks.index', [
             'tasks' => $request->user()->tasks()->latest()->get(),
         ]);
@@ -26,6 +29,8 @@ class TaskController extends Controller
      */
     public function create(): View
     {
+        Gate::authorize('create', Task::class);
+
         return view('tasks.create');
     }
 
@@ -48,20 +53,24 @@ class TaskController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Request $request, Task $task): View
+    public function show(Task $task): View
     {
+        Gate::authorize('view', $task);
+
         return view('tasks.show', [
-            'task' => $this->ownedTask($request, $task),
+            'task' => $task,
         ]);
     }
 
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(Request $request, Task $task): View
+    public function edit(Task $task): View
     {
+        Gate::authorize('update', $task);
+
         return view('tasks.edit', [
-            'task' => $this->ownedTask($request, $task),
+            'task' => $task,
         ]);
     }
 
@@ -70,8 +79,6 @@ class TaskController extends Controller
      */
     public function update(UpdateTaskRequest $request, Task $task): RedirectResponse
     {
-        $task = $this->ownedTask($request, $task);
-
         $task->update($request->safe()->only([
             'title',
             'description',
@@ -86,9 +93,11 @@ class TaskController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Request $request, Task $task): RedirectResponse
+    public function destroy(Task $task): RedirectResponse
     {
-        $this->ownedTask($request, $task)->delete();
+        Gate::authorize('delete', $task);
+
+        $task->delete();
 
         return redirect()
             ->route('tasks.index')
@@ -98,9 +107,9 @@ class TaskController extends Controller
     /**
      * Mark the task complete or incomplete.
      */
-    public function toggle(Request $request, Task $task): RedirectResponse
+    public function toggle(Task $task): RedirectResponse
     {
-        $task = $this->ownedTask($request, $task);
+        Gate::authorize('update', $task);
 
         $task->update([
             'completed' => ! $task->completed,
@@ -110,13 +119,5 @@ class TaskController extends Controller
             'status',
             $task->completed ? __('Task marked complete.') : __('Task marked incomplete.'),
         );
-    }
-
-    /**
-     * Find a task that belongs to the signed-in user.
-     */
-    private function ownedTask(Request $request, Task $task): Task
-    {
-        return $request->user()->tasks()->findOrFail($task->id);
     }
 }
