@@ -13,6 +13,9 @@
                 <flux:navbar.item icon="layout-grid" :href="route('dashboard')" :current="request()->routeIs('dashboard')" wire:navigate>
                     {{ __('Dashboard') }}
                 </flux:navbar.item>
+                <flux:navbar.item icon="clipboard-document-list" :href="route('tasks.index')" :current="request()->routeIs('tasks.*')" wire:navigate>
+                    {{ __('Tasks') }}
+                </flux:navbar.item>
             </flux:navbar>
 
             <flux:spacer />
@@ -55,6 +58,9 @@
                 <flux:sidebar.group :heading="__('Platform')">
                     <flux:sidebar.item icon="layout-grid" :href="route('dashboard')" :current="request()->routeIs('dashboard')" wire:navigate>
                         {{ __('Dashboard')  }}
+                    </flux:sidebar.item>
+                    <flux:sidebar.item icon="clipboard-document-list" :href="route('tasks.index')" :current="request()->routeIs('tasks.*')" wire:navigate>
+                        {{ __('Tasks') }}
                     </flux:sidebar.item>
                 </flux:sidebar.group>
             </flux:sidebar.nav>
