@@ -11,6 +11,18 @@
             </flux:button>
         </div>
 
+        <div class="flex flex-wrap gap-2">
+            <flux:button size="sm" :variant="$filter === 'all' ? 'primary' : 'outline'" :href="route('tasks.index')" wire:navigate>
+                {{ __('All') }}
+            </flux:button>
+            <flux:button size="sm" :variant="$filter === 'active' ? 'primary' : 'outline'" :href="route('tasks.index', ['filter' => 'active'])" wire:navigate>
+                {{ __('Active') }}
+            </flux:button>
+            <flux:button size="sm" :variant="$filter === 'completed' ? 'primary' : 'outline'" :href="route('tasks.index', ['filter' => 'completed'])" wire:navigate>
+                {{ __('Completed') }}
+            </flux:button>
+        </div>
+
         @if (session('status'))
             <flux:callout variant="success" icon="check-circle">
                 {{ session('status') }}
@@ -19,8 +31,22 @@
 
         @if ($tasks->isEmpty())
             <div class="rounded-xl border border-zinc-200 p-8 text-center dark:border-zinc-700">
-                <flux:heading>{{ __('No tasks yet') }}</flux:heading>
-                <flux:text class="mt-2">{{ __('Create a task to get started.') }}</flux:text>
+                <flux:heading>
+                    @if ($filter === 'active')
+                        {{ __('No active tasks') }}
+                    @elseif ($filter === 'completed')
+                        {{ __('No completed tasks') }}
+                    @else
+                        {{ __('No tasks yet') }}
+                    @endif
+                </flux:heading>
+                <flux:text class="mt-2">
+                    @if ($filter === 'all')
+                        {{ __('Create a task to get started.') }}
+                    @else
+                        {{ __('Try another filter to see more tasks.') }}
+                    @endif
+                </flux:text>
             </div>
         @else
             <div class="flex flex-col gap-3">

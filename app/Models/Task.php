@@ -4,6 +4,8 @@ namespace App\Models;
 
 use Database\Factories\TaskFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
+use Illuminate\Database\Eloquent\Attributes\Scope;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -45,5 +47,20 @@ class Task extends Model
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
+    }
+
+    /**
+     * Limit the query to active or completed tasks.
+     *
+     * @param  Builder<Task>  $query
+     */
+    #[Scope]
+    protected function filter(Builder $query, string $filter): Builder
+    {
+        return match ($filter) {
+            'active' => $query->where('completed', false),
+            'completed' => $query->where('completed', true),
+            default => $query,
+        };
     }
 }

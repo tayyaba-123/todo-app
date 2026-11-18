@@ -19,8 +19,15 @@ class TaskController extends Controller
     {
         Gate::authorize('viewAny', Task::class);
 
+        $filter = $request->string('filter')->toString();
+
+        if (! in_array($filter, ['active', 'completed'], true)) {
+            $filter = 'all';
+        }
+
         return view('tasks.index', [
-            'tasks' => $request->user()->tasks()->latest()->get(),
+            'tasks' => $request->user()->tasks()->filter($filter)->latest()->get(),
+            'filter' => $filter,
         ]);
     }
 
