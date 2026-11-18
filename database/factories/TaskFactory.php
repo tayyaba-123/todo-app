@@ -26,4 +26,14 @@ class TaskFactory extends Factory
             'completed' => false,
         ];
     }
+
+    /**
+     * Indicate that the task is complete.
+     */
+    public function completed(): static
+    {
+        return $this->state(fn (array $attributes): array => [
+            'completed' => true,
+        ]);
+    }
 }
