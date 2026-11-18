@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\StoreTaskRequest;
+use App\Http\Requests\UpdateTaskRequest;
 use App\Models\Task;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
@@ -30,15 +32,13 @@ class TaskController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request): RedirectResponse
+    public function store(StoreTaskRequest $request): RedirectResponse
     {
-        $validated = $request->validate([
-            'title' => ['required', 'string', 'max:255'],
-            'description' => ['nullable', 'string'],
-            'due_date' => ['nullable', 'date'],
-        ]);
-
-        $request->user()->tasks()->create($validated);
+        $request->user()->tasks()->create($request->safe()->only([
+            'title',
+            'description',
+            'due_date',
+        ]));
 
         return redirect()
             ->route('tasks.index')
@@ -68,17 +68,15 @@ class TaskController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Task $task): RedirectResponse
+    public function update(UpdateTaskRequest $request, Task $task): RedirectResponse
     {
         $task = $this->ownedTask($request, $task);
 
-        $validated = $request->validate([
-            'title' => ['required', 'string', 'max:255'],
-            'description' => ['nullable', 'string'],
-            'due_date' => ['nullable', 'date'],
-        ]);
-
-        $task->update($validated);
+        $task->update($request->safe()->only([
+            'title',
+            'description',
+            'due_date',
+        ]));
 
         return redirect()
             ->route('tasks.index')
