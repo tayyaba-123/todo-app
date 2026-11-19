@@ -43,6 +43,8 @@ class Task extends Model
 
     /**
      * Get the user that owns the task.
+     *
+     * @return BelongsTo<User, $this>
      */
     public function user(): BelongsTo
     {
@@ -53,6 +55,7 @@ class Task extends Model
      * Limit the query to active or completed tasks.
      *
      * @param  Builder<Task>  $query
+     * @return Builder<Task>
      */
     #[Scope]
     protected function filter(Builder $query, string $filter): Builder
