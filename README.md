@@ -84,7 +84,7 @@ php artisan test --compact tests/Feature/TaskControllerTest.php tests/Feature/Ta
 
 Task requests pass through authentication middleware, controller or form-request authorization, validation, the task policy, and Eloquent persistence. Users can only access tasks that belong to their own account.
 
-## What I Learned
+## What I learned
 
 - **Keep authorization in one place.** A policy plus `Gate::authorize()` and form-request `authorize()` keeps ownership checks consistent, so one user can never see or change another user's tasks.
 - **Form requests keep controllers thin.** Moving validation into `StoreTaskRequest` and `UpdateTaskRequest` left the controller focused on the request flow.
