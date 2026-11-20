@@ -15,17 +15,21 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        User::firstOrCreate(['email' => 'test@example.com'], [
+        $test = User::firstOrCreate(['email' => 'test@example.com'], [
             'name' => 'Test User',
             'password' => 'password',
-            'email_verified_at' => now(),
         ]);
 
         $demo = User::firstOrCreate(['email' => 'demo@example.com'], [
             'name' => 'Demo User',
             'password' => 'password',
-            'email_verified_at' => now(),
         ]);
+
+        foreach ([$test, $demo] as $user) {
+            if (! $user->hasVerifiedEmail()) {
+                $user->markEmailAsVerified();
+            }
+        }
 
         $demo->tasks()->firstOrCreate(['title' => 'Buy groceries'], [
             'description' => 'Milk, eggs, and bread.',
