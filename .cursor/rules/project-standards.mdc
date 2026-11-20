@@ -1,0 +1,44 @@
+---
+description: Coding and workflow standards for the todo app
+alwaysApply: true
+---
+
+# Project Standards
+
+## Code
+
+- Type every Eloquent relationship and scope with generics so PHPStan level 7 passes:
+
+```php
+/** @return HasMany<Task, $this> */
+public function tasks(): HasMany
+
+/**
+ * @param  Builder<Task>  $query
+ * @return Builder<Task>
+ */
+#[Scope]
+protected function filter(Builder $query, string $filter): Builder
+```
+
+- Validate input in Form Requests, never inline in controllers.
+- Authorize every task action through `TaskPolicy` (`Gate::authorize()` or the request's `authorize()`). Always scope queries to the authenticated user, e.g. `$request->user()->tasks()`.
+- Keep seeders idempotent: use `firstOrCreate()` / `updateOrCreate()` keyed on a unique column, not `create()`.
+- Do not suppress PHPStan errors with `@phpstan-ignore`, baselines, or casts. Fix the underlying type.
+
+## Tests
+
+- Add or update a Pest feature test for every behavior change, using model factories.
+- Run the affected tests with `php artisan test --compact <path>` before committing.
+
+## Before Committing
+
+- Run `vendor/bin/pint --dirty` and `composer test` (Pint, PHPStan, Pest). All must pass.
+
+## Git Workflow
+
+- Never commit directly to `main`. Branch from `main` and open a pull request.
+- Use Conventional Commits with no trailing period: `type(scope): summary`, e.g. `feat(tasks): add task crud`, `fix(models): add relationship generics`.
+- Keep commits small and focused on one change.
+- Every PR needs a description covering what changed, why, and how it was tested.
+- Never merge while CI is red, and never merge your own PR before it has been reviewed.

@@ -84,6 +84,15 @@ php artisan test --compact tests/Feature/TaskControllerTest.php tests/Feature/Ta
 
 Task requests pass through authentication middleware, controller or form-request authorization, validation, the task policy, and Eloquent persistence. Users can only access tasks that belong to their own account.
 
+## What I learned
+
+- **Keep authorization in one place.** A policy plus `Gate::authorize()` and form-request `authorize()` keeps ownership checks consistent, so one user can never see or change another user's tasks.
+- **Form requests keep controllers thin.** Moving validation into `StoreTaskRequest` and `UpdateTaskRequest` left the controller focused on the request flow.
+- **Query scopes make filtering reusable.** The `filter` scope on `Task` lets the controller chain `->filter($filter)` onto the user's tasks relationship instead of repeating `where` clauses.
+- **Static analysis catches what tests miss.** PHPStan at level 7 flagged relationships and scopes without generic types. Adding `@return HasMany<Task, $this>` and similar annotations also let PHPStan understand scope calls made through a relationship.
+- **Seeders should be idempotent.** Using `firstOrCreate()` means `php artisan db:seed` can be run repeatedly without failing on unique columns like `email`.
+- **Process matters as much as code.** Work belongs on a branch, in small Conventional Commits, behind a pull request with a clear description, and it only merges after CI is green and someone else has reviewed it.
+
 ## License
 
 This project is open-sourced under the [MIT License](https://opensource.org/licenses/MIT).
